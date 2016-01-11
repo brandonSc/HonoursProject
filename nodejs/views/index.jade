@@ -9,7 +9,7 @@ html
     body
         nav(class="blue darken-4")
             .nav-wrapper
-                a.brand-logo(href='/') Performance Test (Node.Js)
+                a.brand-logo(href='/', style='padding-left:15px') Performance Test (Node.Js)
                 ul#nav-mobile.right.hide-on-med-and-down
                     li
                         a(href='/') Java
@@ -21,7 +21,7 @@ html
         div(class="container")
             br
             h4 Overview
-            p This page runs a response-time performance test on a Node.Js server. The test involves some basic operations as well as a complex, computationally heavy, operation. The basic operations include <i>creating</i>, <i>reading</i>, <i>updating</i> and <i>deleting</i> Record objects. A Record is a simple <i>name-value</i> pair, such as <i>FavouriteColor-Red</i> or <i>CourseCode-COMP4109</i>. The complex operation is intended to be long running (about a 10 seconds). It invokes an arbitrary mathemetical operation on the server. All response times are logged in a console at the end of the page. Compare your results against the same application running on a Java server at {link}, or running on a Go server at {other link}
+            p This page runs a response-time performance test on a Node.Js server. The test involves some basic operations as well as a complex, computationally heavy, operation. The basic operations include <i>creating</i>, <i>reading</i>, <i>updating</i> and <i>deleting</i> Record objects. A Record is a simple <i>name-value</i> pair, such as <i>FavouriteColor-Red</i> or <i>CourseCode-COMP4905</i>. The complex operation is intended to be long running (about a 10 seconds). It invokes an arbitrary mathemetical operation on the server. All response times are logged in a console at the end of the page. Compare your results against the same application running on a Java server at {link}, or running on a Go server at {other link}
             br
             .row
                 .col.s6
