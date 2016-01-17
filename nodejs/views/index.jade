@@ -1,6 +1,7 @@
 doctype html
 html
     head
+        link(href='http://fonts.googleapis.com/icon?family=Material+Icons', rel='stylesheet')
         link(rel='stylesheet', href='/materialize/css/materialize.min.css')
         link(rel='stylesheet', href='/style.css')
         script(type='text/javascript', src='/jquery-1.12.0.min.js')
@@ -10,7 +11,16 @@ html
         nav(class="blue darken-4")
             .nav-wrapper
                 a.brand-logo(href='/', style='padding-left:15px') Performance Test (Node.Js)
+                a.button-collapse(href='#', data-activates='nav-mobile-collapsed')
+                    i.material-icons menu
                 ul#nav-mobile.right.hide-on-med-and-down
+                    li
+                        a(href='/') Java
+                    li
+                        a(href='/') Golang
+                    li
+                        a(href='/about') About
+                ul#nav-mobile-collapsed.side-nav
                     li
                         a(href='/') Java
                     li
@@ -21,73 +31,185 @@ html
         div(class="container")
             br
             h4 Overview
-            p This page runs a response-time performance test on a Node.Js server. The test involves some basic operations as well as a complex, computationally heavy, operation. The basic operations include <i>creating</i>, <i>reading</i>, <i>updating</i> and <i>deleting</i> Record objects. A Record is a simple <i>name-value</i> pair, such as <i>FavouriteColor-Red</i> or <i>CourseCode-COMP4905</i>. The complex operation is intended to be long running (about a 10 seconds). It invokes an arbitrary mathemetical operation on the server. All response times are logged in a console at the end of the page. Compare your results against the same application running on a Java server at {link}, or running on a Go server at {other link}
+            p This page runs a response-time performance test on a Node.Js server. The test involves running some basic operations as well as a computationally heavy operation. The basic operations include <i>creating</i>, <i>reading</i>, <i>updating</i> and <i>deleting</i> Record objects. A Record is a simple <i>name-value</i> pair, such as <i>FavouriteColor-Red</i> or <i>CourseCode-COMP4905</i>. The complex operation is intended to be long running (about a 10 seconds). It invokes an arbitrary mathemetical operation on the server. All response times are logged in a console at the end of the page. Compare your results against the same application running on a Java server, or running on a Go server!
             br
             .row
                 .col.s6
                     .card.hoverable(style="padding:15px")
                         span.card-title Record 
-                        .row(id="create_record_row")
+                        .row#record_name_row
                             .input-field.col.s12
-                                input#create_record.validate(type='text')
-                                label(for='record_name') Name
-                        .row    
+                                input#record_name.validate(type='text')
+                                label.active(for='record_name') Name
+                        .row#record_value_row
                             .input-field.col.s12
-                                input#last_name.validate(type='text')
-                                label(for='record_value') Value
+                                input#record_value.validate(type='text')
+                                label.active(for='record_value') Value
 
                 .col.s6
                     .row
                         .col(style="padding-left:15px;padding-top:15px")
                             .row.center(id="create_record_row")
-                                a.waves-effect.waves-light.btn-large(style="width:120px", id="create_button", class="blue darken-4") Create
+                                a#create_button.waves-effect.waves-light.btn-large(style="width:120px", class="blue darken-4") Create
                             .row.center
-                                a.waves-effect.waves-light.btn-large(style="width:120px",id="update_button", class="blue darken-4") Update
+                                a#update_button.waves-effect.waves-light.btn-large(style="width:120px", class="blue darken-4") Update
                         .col(style="padding-left:15px;padding-top:15px")
                             .row.center(id="create_record_row")
-                                a.waves-effect.waves-light.btn-large(style="width:120px",id="read_button", class="blue darken-4") Read
+                                a#read_button.waves-effect.waves-light.btn-large(style="width:120px", class="blue darken-4") Read
                             .row.center
-                                a.waves-effect.waves-light.btn-large(style="width:120px",id="delete_button", class="blue darken-4") Delete
+                                a#delete_button.waves-effect.waves-light.btn-large(style="width:120px", class="blue darken-4") Delete
                     .row(style="padding-left:5px")
-                            a.waves-effect.waves-light.btn-large(style="width:240px", id="long_operation", class="red") Run Long Operation
+                            a#long_operation.waves-effect.waves-light.btn-large(style="width:240px", class="red") Run Long Operation
             .scrollbox(id="console")
             br
 
 script.
     $(document).ready(function(){
+        $(".button-collapse").sideNav();
+
         $("#create_button").click(function() {
-            var field = document.getElementById("console");
-            var str = field.innerHTML;
-            var time = new Date();
-            str = "[CREATE "+time+"] 100 ms<br>" + str;
-            field.innerHTML = str;
+            var startTime = new Date();
+            var name = document.getElementById('record_name').value;
+            var value = document.getElementById('record_value').value;
+            function callback(response) {
+                var text = printObj(response);
+                var endTime = new Date();
+                var time = endTime.getTime() - startTime.getTime(); 
+                printOut("CREATE", time+" ms - "+text);
+            }
+            function error(response) { 
+                var text = response.responseText;
+                var endTime = new Date();
+                var time = endTime.getTime() - startTime.getTime(); 
+                printErr("CREATE", time+" ms - "+text);
+            }
+            $.ajax({
+                url : '/record',
+                contentType: 'application/json',
+                data: JSON.stringify({ name: name, value: value }),
+                type: 'PUT', 
+                success: callback,
+                error: error
+            });
         });
+        
         $("#read_button").click(function() {
-            var field = document.getElementById("console");
-            var str = field.innerHTML;
-            var time = new Date();
-            str = "[READ "+time+"] 100 ms<br>" + str;
-            field.innerHTML = str;
+            var startTime = new Date();
+            function callback(response) {
+                var text = printObj(response);
+                var endTime = new Date();
+                var time = endTime.getTime() - startTime.getTime(); 
+                printOut("READ", time+" ms - "+text);
+                document.getElementById('record_value').value = response.value;
+                $('#record_value').focus();
+            }
+            function error(response) { 
+                var text = response.responseText;
+                console.log(response);
+                var endTime = new Date();
+                var time = endTime.getTime() - startTime.getTime(); 
+                printErr("READ", time+" ms - "+text);
+            }
+            var name = document.getElementById('record_name').value;
+            $.ajax({
+                url: '/record?name='+name,
+                type: 'GET', 
+                success: callback,
+                error: error
+            });
         });
+        
         $("#update_button").click(function() {
-            var field = document.getElementById("console");
-            var str = field.innerHTML;
-            var time = new Date();
-            str = "[UPDATE "+time+"] 100 ms<br>" + str;
-            field.innerHTML = str;
+            var startTime = new Date();
+            function callback(response) {
+                var text = printObj(response);
+                var endTime = new Date();
+                var time = endTime.getTime() - startTime.getTime(); 
+                printOut("UPDATE", time+" ms - "+text);
+            }
+            function error(response) { 
+                var text = response.responseText;
+                var endTime = new Date();
+                var time = endTime.getTime() - startTime.getTime(); 
+                printErr("UPDATE", time+" ms - "+text);
+            }
+            var name = document.getElementById('record_name').value;
+            var value = document.getElementById('record_value').value;
+            $.ajax({
+                url: '/record',
+                type: 'POST', 
+                contentType: 'application/json',
+                success: callback,
+                data: JSON.stringify({ name: name, value: value }),
+                error: error
+            });
         });
+
         $("#delete_button").click(function() {
-            var field = document.getElementById("console");
-            var str = field.innerHTML;
-            var time = new Date();
-            str = "[DELETE "+time+"] 100 ms<br>" + str;
-            field.innerHTML = str;
+            var startTime = new Date();
+            function callback(response) {
+                var text = printObj(response);
+                var endTime = new Date();
+                var time = endTime.getTime() - startTime.getTime(); 
+                printOut("DELETE", time+" ms - "+text);
+            }
+            function error(response) { 
+                var text = response.responseText;
+                var endTime = new Date();
+                var time = endTime.getTime() - startTime.getTime(); 
+                printErr("DELETE", time+" ms - "+text);
+            }
+            var name = document.getElementById('record_name').value;
+            $.ajax({
+                url: '/record?name='+name,
+                type: 'DELETE', 
+                success: callback,
+                error: error
+            });
         });
         $("#long_operation").click(function() {
-            var field = document.getElementById("console");
-            var str = field.innerHTML;
-            var time = new Date();
-            str = "[LONG_OP "+time+"] 100 ms<br>" + str;
-            field.innerHTML = str;
+            var startTime = new Date();
+            function callback(response) {
+                var text = printObj(response);
+                var endTime = new Date();
+                var time = endTime.getTime() - startTime.getTime(); 
+                printOut("LONG_OP", time+" ms - "+text);
+            }
+            function error(response) { 
+                var text = response.responseText;
+                var endTime = new Date();
+                var time = endTime.getTime() - startTime.getTime(); 
+                printErr("LONG_OP", time+" ms - "+text);
+            }
+            var name = document.getElementById('record_name').value;
+            var value = document.getElementById('record_value').value;
+            $.ajax({
+                url: '/long-operation',
+                type: 'POST', 
+                contentType: 'application/json',
+                success: callback,
+                data: JSON.stringify({ name: name, value: value }),
+                error: error
+            });
         });
     });
+
+    function printOut(tag, text) { 
+        var field = document.getElementById("console");
+        var str = field.innerHTML;
+        var time = new Date();
+        str = "<nobr>["+tag+" "+time+"] "+text+"<nobr><br>" + str;
+        field.innerHTML = str;
+    }
+    function printErr(tag, text) { 
+        var field = document.getElementById("console");
+        var str = field.innerHTML;
+        var time = new Date();
+        str = "<nobr><font color='#ff4d4d'>["+tag+" "+time+"] "+text+"</font></nobr><br>" + str;
+        field.innerHTML = str;
+    }
+    function printObj(obj) { 
+        var str = JSON.stringify(obj);
+        str.replace("\\", "");
+        return str;
+    }
