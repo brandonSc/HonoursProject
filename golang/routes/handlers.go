@@ -108,7 +108,7 @@ func PostRecord(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal([]byte(js), &response)
 	if err != nil {
 		w.WriteHeader(500)
-		estr := fmt.Sprintf("error converting documents to json, routes.GetRecord: %s\n", err)
+		estr := fmt.Sprintf("error converting documents to json, routes.PostRecord: %s\n", err)
 		fmt.Fprint(w, estr)
 		//fmt.Println(estr)
 		return
@@ -116,18 +116,11 @@ func PostRecord(w http.ResponseWriter, r *http.Request) {
 	// check if docs matching name are found
 	if len(response.Docs) > 0 {
 		// doc found, now update it
-		var f map[string]interface{}
-		json.Unmarshal([]byte(js), &f)
-		f["value"] = value
-		rec, err := json.Marshal(f)
-		if err != nil {
-			w.WriteHeader(500)
-			fmt.Fprint(w, `{"error":"unable to convert data to json"}`)
-			//fmt.Printf("error reading from cloudant, routes.GetRecord: %s\n", err)
-			return
-		}
-		//fmt.Println(rec)
-		res, err := cadb.Post("records-nodejs", string(rec), "")
+		doc := response.Docs[0]
+		doc.Value = value
+		rec, _ := json.Marshal(doc)
+		fmt.Println(string(rec))
+		res, err := cadb.Post("records", string(rec), "")
 		if err != nil {
 			w.WriteHeader(500)
 			fmt.Fprint(w, `{"error":"unable to update Record on cloudant"}`)
@@ -181,7 +174,7 @@ func PutRecord(w http.ResponseWriter, r *http.Request) {
 	if len(response.Docs) == 0 {
 		record := `{"name":"` + name + `","value":"` + value + `"}`
 		// create new record in cloudant
-		res, err := cadb.Post("records-nodejs", record, "")
+		res, err := cadb.Post("records", record, "")
 		if err != nil {
 			w.WriteHeader(500)
 			//fmt.Println("error creating record which seemed to be unique")
@@ -233,7 +226,7 @@ func DeleteRecord(w http.ResponseWriter, r *http.Request) {
 	// check if docs matching name are found
 	if len(response.Docs) > 0 {
 		record := response.Docs[0]
-		res, err := cadb.Delete("records-nodejs/"+record.Id+"?rev="+record.Rev, "", "")
+		res, err := cadb.Delete("records/"+record.Id+"?rev="+record.Rev, "", "")
 		if err != nil {
 			w.WriteHeader(500)
 			fmt.Fprint(w, `{"error":"unable to update Record on cloudant"}`)
@@ -260,5 +253,5 @@ func find_record(name string) (*http.Response, error) {
 			"name": "` + name + `" 
 		}
 	}`
-	return cadb.Post("records-nodejs", selector, "_find")
+	return cadb.Post("records", selector, "_find")
 }
