@@ -22,11 +22,15 @@ module.exports = function(app) {
 
         findRecord(name, function(error, response, body) {
             if ( error ) { 
-                res.stauts(500).send(error);
+                res.status(500).send(error);
                 console.log(error);
             } else { 
                 var docs = JSON.parse(body).docs;
-                res.send(docs[0]);
+                if ( docs.length > 0 ) {
+                    res.send(docs[0]);
+                } else {
+                    res.status(404).send('{"error": "No Record with the name \''+name+'\' was found"}');
+                }
             }
         });
     });
