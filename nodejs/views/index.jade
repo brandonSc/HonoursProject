@@ -152,6 +152,10 @@ script.
                 var endTime = new Date();
                 var time = endTime.getTime() - startTime.getTime(); 
                 printOut("DELETE", time+" ms - "+text);
+                document.getElementById("record_name").value = "";
+                document.getElementById("record_value").value = "";
+                $('#record_name').focus();
+                $('#record_value').focus();
             }
             function error(response) { 
                 var text = response.responseText;
