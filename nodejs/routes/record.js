@@ -22,11 +22,15 @@ module.exports = function(app) {
 
         findRecord(name, function(error, response, body) {
             if ( error ) { 
-                res.stauts(500).send(error);
+                res.status(500).send(error);
                 console.log(error);
             } else { 
                 var docs = JSON.parse(body).docs;
-                res.send(docs[0]);
+                if ( docs.length > 0 ) {
+                    res.send(docs[0]);
+                } else {
+                    res.status(404).send('{"error": "No Record with the name \''+name+'\' was found"}');
+                }
             }
         });
     });
@@ -150,7 +154,7 @@ module.exports = function(app) {
      */
     function findRecord(name, callback) {
         var options = {
-            url: db+'/records-nodejs/_find',
+            url: db+'/records/_find',
             headers: { 'content-type': 'application/json' },
             body: JSON.stringify({ 
                 selector: {
@@ -168,7 +172,7 @@ module.exports = function(app) {
      */ 
     function deleteRecord(record, callback) { 
         var options = {
-            url: db+'/records-nodejs/'+record._id+'?rev='+record._rev,
+            url: db+'/records/'+record._id+'?rev='+record._rev,
             headers: { 'content-type': 'application/json' },
         };
         request.del(options, callback).auth(dbUser, dbPass);
@@ -180,7 +184,7 @@ module.exports = function(app) {
      */
     function updateRecord(record, callback) {
         var options = {
-            url: db+'/records-nodejs',
+            url: db+'/records',
             headers: { 'content-type': 'application/json' },
             body: JSON.stringify(record)
         };
@@ -193,7 +197,7 @@ module.exports = function(app) {
      */
     function createRecord(name, value, callback) { 
         var options = {
-            url: db+'/records-nodejs',
+            url: db+'/records',
             headers: { 'content-type': 'application/json' },
             body: JSON.stringify({ name: name, value: value })
         };
