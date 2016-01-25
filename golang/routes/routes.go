@@ -13,9 +13,33 @@ type Routes []Route
 
 var routes = Routes{
 	Route{
-		"Index",
+		"App Page",
 		"GET",
 		"/",
 		Index,
+	},
+	Route{
+		"Create Record",
+		"PUT",
+		"/record",
+		PutRecord,
+	},
+	Route{
+		"Read Record",
+		"GET",
+		"/record",
+		GetRecord,
+	},
+	Route{
+		"Update Record",
+		"POST",
+		"/record",
+		PostRecord,
+	},
+	Route{
+		"Delete Record",
+		"DELETE",
+		"/record",
+		DeleteRecord,
 	},
 }

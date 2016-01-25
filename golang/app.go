@@ -1,11 +1,11 @@
 package main
 
 import (
+	"github.com/brandonSc/HonoursProject/golang/routes"
+	"hub.jazz.net/git/schurman93/Git-Monitor/cadb" // cloudant db driver
 	"log"
 	"net/http"
 	"os"
-	//for extracting service credentials from VCAP_SERVICES
-	"github.com/brandonSc/HonoursProject/golang/routes"
 )
 
 const (
@@ -26,10 +26,10 @@ func main() {
 	}
 
 	// setup the database
-	//	cadb.Init()
+	cadb.Init()
 
 	// grab the router and request handlers
-	router := route.NewRouter()
+	router := routes.NewRouter()
 
 	// launch the server
 	log.Printf("Starting app on %+v:%+v\n", host, port)
