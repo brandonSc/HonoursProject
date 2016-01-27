@@ -8,7 +8,7 @@ html
         script(type='text/javascript', src='/materialize/js/materialize.min.js')
         title Performance Test (Node.Js)
     body
-        nav(class="blue darken-4")
+        nav(class="top-nav blue darken-4 hide-on-med-and-down")
             .nav-wrapper
                 a.brand-logo(href='/', style='padding-left:15px') Performance Test (Node.Js)
                 a.button-collapse(href='#', data-activates='nav-mobile-collapsed')
@@ -20,6 +20,11 @@ html
                         a(href='http://localhost:4000') Golang
                     li
                         a(href='/about') About
+        nav(class="top-nav blue darken-4 hide-on-large-only" style="height:100px")
+            .nav-wrapper(style="padding-top:20px")
+                a.brand-logo(href='/', style='font-size:250%') Performance Test (Node.Js)
+                a.button-collapse(href='#', data-activates='nav-mobile-collapsed')
+                    i.material-icons(style='font-size:350%') menu
                 ul#nav-mobile-collapsed.side-nav
                     li
                         a(href='/') Java
@@ -34,7 +39,7 @@ html
             p This page runs a response-time performance test on a Node.Js server. The test involves running some basic operations as well as a computationally heavy operation. The basic operations include <i>creating</i>, <i>reading</i>, <i>updating</i> and <i>deleting</i> Record objects. A Record is a simple <i>name-value</i> pair, such as <i>FavouriteColor-Red</i> or <i>CourseCode-COMP4905</i>. The complex operation is intended to be long running (about a 10 seconds). It invokes an arbitrary mathemetical operation on the server. All response times are logged in a console at the end of the page. Compare your results against the same application running on a Java server, or running on a Go server!
             br
             .row
-                .col.s6
+                .col.s12.m6
                     .card.hoverable(style="padding:15px")
                         span.card-title Record 
                         .row#record_name_row
@@ -46,7 +51,7 @@ html
                                 input#record_value.validate(type='text')
                                 label.active(for='record_value') Value
 
-                .col.s6
+                .col.s12.m6
                     .row
                         .col(style="padding-left:15px;padding-top:15px")
                             .row.center(id="create_record_row")
