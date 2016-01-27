@@ -1,0 +1,43 @@
+/* label color */
+.input-field label {
+    color: #ffc107;
+}
+/* label focus color */
+.input-field input[type=text]:focus + label {
+    color: #ffc107;
+}
+/* label underline focus color */
+.input-field input[type=text]:focus {
+    border-bottom: 1px solid #ffc107;
+    box-shadow: 0 1px 0 0 #ffc107;
+}
+/* valid color */
+.input-field input[type=text].valid {
+    border-bottom: 1px solid #ffc107;
+    box-shadow: 0 1px 0 0 #ffc107;
+}
+/* invalid color (change this red) */
+.input-field input[type=text].invalid {
+    border-bottom: 1px solid #ffc107;
+    box-shadow: 0 1px 0 0 #ffc107;
+}
+/* icon prefix focus color */
+.input-field .prefix.active {
+    color: #ffc107;
+}
+
+/* grey text indicators */
+.greyText {
+    color: grey;
+}
+
+/* scroll box for response time log */
+.scrollbox {
+    padding:0 0 0 5px;
+    color:grey;
+    height:120px;
+    width:100%;
+    border:1px solid #ccc;
+    font:12px Monospace;
+    overflow:auto;
+}
