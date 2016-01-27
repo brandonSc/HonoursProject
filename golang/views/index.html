@@ -9,21 +9,24 @@
     <script type="text/javascript" src="/static/materialize/js/materialize.min.js"></script>
     <title>Performance Test (Golang)</title>
 </head>
-
 <body>
-    <nav class="green accent-4">
-        <div class="nav-wrapper"><a href="/" style="padding-left:15px" class="brand-logo">Performance Test (Golang)</a><a href="#" data-activates="nav-mobile-collapsed" class="button-collapse"><i class="material-icons">menu</i></a>
-            <ul id="nav-mobile" class="right hide-on-med-and-down">
+	<nav class="top-nav green accent-4 hide-on-med-and-down">
+      <div class="nav-wrapper"><a href="/" style="padding-left:15px" class="brand-logo">Performance Test (Node.Js)</a><a href="#" data-activates="nav-mobile-collapsed" class="button-collapse"><i class="material-icons">menu</i></a>
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
                 <li><a href="http://localhost:3000">Node.Js</a></li>
-                <li><a href="/">Java</a></li>
+                <li><a href="http://localhost:8080/comp3601">Java</a></li>
                 <li><a href="/about">About</a></li>
-            </ul>
-            <ul id="nav-mobile-collapsed" class="side-nav">
+        </ul>
+      </div>
+    </nav>
+    <nav style="height:100px" class="top-nav green accent-4 hide-on-large-only">
+      <div style="padding-top:20px" class="nav-wrapper"><a href="/" style="font-size:250%" class="brand-logo">Performance Test (Node.Js)</a><a href="#" data-activates="nav-mobile-collapsed" class="button-collapse"><i style="font-size:350%" class="material-icons">menu</i></a>
+        <ul id="nav-mobile-collapsed" class="side-nav">
                 <li><a href="http://localhost:3000">Node.Js</a></li>
-                <li><a href="/">Java</a></li>
+                <li><a href="http://localhost:8080/comp3601">Java</a></li>
                 <li><a href="/about">About</a></li>
-            </ul>
-        </div>
+        </ul>
+      </div>
     </nav>
     <div class="container">
         <br>
@@ -31,7 +34,7 @@
         <p>This page runs a response-time performance test on a Node.Js server. The test involves running some basic operations as well as a computationally heavy operation. The basic operations include <i>creating</i>, <i>reading</i>, <i>updating</i> and <i>deleting</i> Record objects. A Record is a simple <i>name-value</i> pair, such as <i>FavouriteColor-Red</i> or <i>CourseCode-COMP4905</i>. The complex operation is intended to be long running (about a 10 seconds). It invokes an arbitrary mathemetical operation on the server. All response times are logged in a console at the end of the page. Compare your results against the same application running on a Java server, or running on a Go server!</p>
         <br>
         <div class="row">
-            <div class="col s6">
+            <div class="col s12 m6">
                 <div style="padding:15px" class="card hoverable"><span class="card-title">Record </span>
                     <div id="record_name_row" class="row">
                         <div class="input-field col s12">
@@ -47,7 +50,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col s6">
+            <div class="col s12 m6">
                 <div class="row">
                     <div style="padding-left:15px;padding-top:15px" class="col">
                         <div id="create_record_row" class="row center"><a id="create_button" style="width:120px" class="waves-effect waves-light btn-large green accent-4">Create</a></div>
