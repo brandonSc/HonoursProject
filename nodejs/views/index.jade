@@ -194,10 +194,10 @@ script.
             var value = document.getElementById('record_value').value;
             $.ajax({
                 url: '/long-operation',
-                type: 'POST', 
+                type: 'GET', 
                 contentType: 'application/json',
                 success: callback,
-                data: JSON.stringify({ name: name, value: value }),
+                //data: JSON.stringify({ name: name, value: value }),
                 error: error
             });
         });

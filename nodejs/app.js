@@ -23,6 +23,9 @@ app.get('/', function(req, res) {
 // load the REST API for 'records'
 require('./routes/record')(app); 
 
+// load the long operation route
+require('./routes/longOperation')(app);
+
 // start the server
 var port = 3000;
 if (process.env.PORT) {
