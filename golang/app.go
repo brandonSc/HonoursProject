@@ -1,11 +1,12 @@
 package main
 
 import (
-	"github.com/brandonSc/HonoursProject/golang/routes"
-	"hub.jazz.net/git/schurman93/Git-Monitor/cadb" // cloudant db driver
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/brandonSc/HonoursProject/golang/routes"
+	"hub.jazz.net/git/schurman93/Git-Monitor/cadb" // cloudant db driver
 )
 
 const (

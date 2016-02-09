@@ -42,4 +42,10 @@ var routes = Routes{
 		"/record",
 		DeleteRecord,
 	},
+	Route{
+		"Long Operation",
+		"POST",
+		"/long-operation",
+		LongOperation,
+	},
 }

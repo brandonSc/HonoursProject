@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/brandonSc/HonoursProject/golang/longops"
 	"github.com/brandonSc/HonoursProject/golang/models"
 	"hub.jazz.net/git/schurman93/Git-Monitor/cadb"
 )
@@ -239,6 +240,15 @@ func DeleteRecord(w http.ResponseWriter, r *http.Request) {
 		//fmt.Println("no records found that match name=" + name)
 		fmt.Fprint(w, `{"error":"no Record found with name: `+name+`"}`)
 	}
+}
+
+//
+// run the long operation which factors an arbitrary number
+//
+func LongOperation(w http.ResponseWriter, h *http.Request) {
+	//longops.RunLongOperation()
+	longops.LongSort()
+	fmt.Fprintf(w, `{"message":"done"}`)
 }
 
 //
