@@ -6,7 +6,7 @@ module.exports = function(app) {
     // set cloudant database URL and credentials 
     var db = 'https://0a6f8059-22b3-4136-9e7c-9fbcb7b4579d-bluemix.cloudant.com';
     var dbUser = '0a6f8059-22b3-4136-9e7c-9fbcb7b4579d-bluemix';
-    var dbPass = '***REMOVED***';
+    var dbPass = '7bc75c7e0ee2f57c22b8a985979885e6ecb78c64f5f201bcf61d8ab73b72642e';
 
     /**
      * retrieve an existing record by name
