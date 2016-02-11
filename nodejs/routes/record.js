@@ -7,7 +7,7 @@ module.exports = function(app) {
     var db = 'https://0a6f8059-22b3-4136-9e7c-9fbcb7b4579d-bluemix.cloudant.com';
     var dbUser = '0a6f8059-22b3-4136-9e7c-9fbcb7b4579d-bluemix';
     var dbPass = process.env.HONOURS_PROJ_DB_PASS;
-    if ( dbPass === '' or dbPass === undefined ) {
+    if ( dbPass === '' || dbPass === undefined ) {
         console.log('Missing cloudant db password');
         process.exit(1);
     }

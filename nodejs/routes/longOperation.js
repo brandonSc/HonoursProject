@@ -1,13 +1,43 @@
+var LineReader = require('line-by-line');
+
 module.exports = function(app) {
 	
     var largeNumber = 5056530125034292182439436337056723800463181629800744005252906860109785352105082510253715567863347519484154579262768925987519610277940169682359736139258818047824720566904998970963407492662518872571713*7777777777;
 
+	var array = new Array();
+	lr = new LineReader('../values.txt');
+
+	lr.on('error', function (err) {
+		console.log('error reading values.txt: '+err);
+	});
+
+	lr.on('line', function (line) {
+		array.push(Number(line));
+	});
+
+	lr.on('end', function () {
+		console.log('array initialized');
+	});
+    
     app.get('/long-operation', function(req, res) { 
 	    //console.log(factor(largeNumber));
-        factor(largeNumber);
+        bubbleSort(array);
         res.header('Content-Type', 'application/json');
         res.send('{"message":"done"}');
     });
+    
+    function bubbleSort(a) {
+        for ( i=0; i<a.length; i++ ) {
+            for ( j=1; j<a.length-i; j++ ) { 
+                if ( a[j-1] < a[j] ) { 
+                    var temp = a[j-1];
+                    a[j-1] = a[j];
+                    a[j] = temp;
+                }
+            }
+        }
+        return a;
+    }
 
 	function factor(n) {
 		if (isNaN(n) || !isFinite(n) || n%1!=0 || n==0) return ''+n;
