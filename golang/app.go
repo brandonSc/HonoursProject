@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/brandonSc/HonoursProject/golang/longops"
 	"github.com/brandonSc/HonoursProject/golang/routes"
 	"hub.jazz.net/git/schurman93/Git-Monitor/cadb" // cloudant db driver
 )
@@ -15,6 +16,9 @@ const (
 )
 
 func main() {
+	// init the test array for /long-operation
+	longops.InitArray()
+
 	// setup host and port for server
 	var port string
 	if port = os.Getenv("VCAP_APP_PORT"); len(port) == 0 {

@@ -2,19 +2,20 @@ package longops
 
 import (
 	"bufio"
-	"fmt"
 	"os"
 	"strconv"
 )
 
 var array []float64
 
-func LongSort() {
+func InitArray() {
 	if array == nil {
-		array = readValues("../values.txt")
+		array = read_values("../values.txt")
 	}
+}
+
+func LongSort() {
 	BubbleSort(array)
-	fmt.Println(array)
 }
 
 func BubbleSort(a []float64) []float64 {
@@ -30,7 +31,7 @@ func BubbleSort(a []float64) []float64 {
 	return a
 }
 
-func readValues(path string) []float64 {
+func read_values(path string) []float64 {
 	inFile, _ := os.Open(path)
 	defer inFile.Close()
 	scanner := bufio.NewScanner(inFile)
