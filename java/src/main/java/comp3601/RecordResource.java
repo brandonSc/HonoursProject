@@ -9,19 +9,23 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.ClientProtocolException;
 import org.json.simple.JSONObject;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.apache.http.HttpResponse;
 
 /**
@@ -43,9 +47,12 @@ public class RecordResource
     @GET
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public Record getRecord() {
-        //return findRecord("test");
-        return new Record("test", "value");
+    public String getRecord(@QueryParam("name") String name) throws Exception {
+        Record r = findRecord(name);
+        if ( r == null ) {
+            return "{\"error\":\"no record found for name='"+name+"'\"}";
+        } 
+        return r.toString();
     }
 
     /**
@@ -57,32 +64,15 @@ public class RecordResource
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public Record postRecord() {
-        try {
-            DefaultHttpClient httpClient = new DefaultHttpClient();
-            HttpPost postRequest = new HttpPost(
-                    "http://");
-            StringEntity input = new StringEntity("{\"qty\":100,\"name\":\"iPad 4\"}");
-            input.setContentType("application/json");
-            postRequest.setEntity(input);
-            HttpResponse response = httpClient.execute(postRequest);
-            if (response.getStatusLine().getStatusCode() != 201) {
-                throw new RuntimeException("Failed : HTTP error code : "
-                        + response.getStatusLine().getStatusCode());
-            }
-            BufferedReader br = new BufferedReader(
-                    new InputStreamReader((response.getEntity().getContent())));
-            String output = "";
-            while ((output += br.readLine()) != null) 
-                httpClient.getConnectionManager().shutdown();
-            System.out.println(output);
-            return new Record("null", "null");
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+    public String postRecord(MultivaluedMap<String, String> params) throws Exception {
+        String name = params.getFirst("name");
+        String value = params.getFirst("value");
+        Record r = findRecord(name);
+        if ( r == null ) { 
+            return "{\"error\":\"record not found with name='"+name+"'\"}";
         }
-        return null;
+        r.setValue(value);
+        return updateRecord(r);
     }
 
     /**
@@ -94,8 +84,14 @@ public class RecordResource
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public Record putRecord() {
-        return null;
+    public String putRecord(MultivaluedMap<String, String> params) throws Exception {
+        String name = params.getFirst("name");
+        String value = params.getFirst("value");
+        Record r = findRecord(name);
+        if ( r != null ) { 
+            return "{\"error\":\"record already exists with name='"+name+"'\"}";
+        }   
+        return createRecord(name, value);
     }
 
     /**
@@ -106,46 +102,145 @@ public class RecordResource
     @DELETE
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public Record deleteRecord() {
-        return null;
+    public String deleteRecord(@QueryParam("name") String name) throws Exception {
+        Record r = findRecord(name);
+        if ( r == null ) {
+            return "{\"error\":\"record not found for name='"+name+"'\"}";
+        } 
+        return deleteRecord(r.getId(), r.getRev());
     }
 
     /**
      * Look up a record by name in Cloudant 
      */
-    public Record findRecord(String name) {
+    public Record findRecord(String name) throws MalformedURLException, IOException, ParseException {
         String url = db + "/records/_find";
-        try {
-            DefaultHttpClient httpClient = new DefaultHttpClient();
-            httpClient.getCredentialsProvider().setCredentials(
-                    new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT), 
-                    new UsernamePasswordCredentials(dbUser, dbPass));
-            HttpPost postRequest = new HttpPost(url);
-            JSONObject obj = new JSONObject();
-            JSONObject selector = new JSONObject();
-            selector.put("_id", "{$gt:0}");
-            selector.put("name", name);
-            obj.put("selector", selector);
-            StringEntity input = new StringEntity(obj.toString());
-            input.setContentType("application/json");
-            postRequest.setEntity(input);
-            HttpResponse response = httpClient.execute(postRequest);
-            if (response.getStatusLine().getStatusCode() != 200) {
-                throw new RuntimeException("Failed : HTTP error code : "
-                        + response.getStatusLine().getStatusCode());
-            }
-            BufferedReader br = new BufferedReader(
-                    new InputStreamReader((response.getEntity().getContent())));
-            String output = "";
-            while ((output += br.readLine()) != null);
-            httpClient.getConnectionManager().shutdown();
-            System.out.println(output);
-            return new Record("name", output);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        httpClient.getCredentialsProvider().setCredentials(
+                new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT), 
+                new UsernamePasswordCredentials(dbUser, dbPass));
+        HttpPost postRequest = new HttpPost(url);
+
+        JSONObject obj = new JSONObject();
+        JSONObject selector = new JSONObject();
+        JSONObject id = new JSONObject();
+        id.put("$gt", 0);
+        selector.put("_id", id);
+        selector.put("name", name);
+        obj.put("selector", selector);
+
+        StringEntity input = new StringEntity(obj.toString());
+        input.setContentType("application/json");
+        postRequest.setEntity(input);
+        HttpResponse response = httpClient.execute(postRequest);
+        if (response.getStatusLine().getStatusCode() != 200) {
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + response.getStatusLine().getStatusCode());
         }
-        return new Record("error", "error");
+        BufferedReader br = new BufferedReader(
+                new InputStreamReader((response.getEntity().getContent())));
+        String output = "", line = "";
+        while ((line = br.readLine()) != null) {
+            output += line;
+        }
+        httpClient.getConnectionManager().shutdown();
+
+        JSONParser parser = new JSONParser();
+        JSONObject js = (JSONObject)(parser.parse(output));
+        JSONArray arr = (JSONArray)js.get("docs");
+        if ( arr.isEmpty() ) {
+            return null;
+        }  
+        JSONObject o = (JSONObject)arr.get(0);
+        Record r = Record.parse(o);
+        return r;
+    }
+    
+    /**
+     *  Update a record in Cloudant 
+     */
+    public String updateRecord(Record record) throws MalformedURLException, IOException, ParseException {
+        String url = db + "/records";
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        httpClient.getCredentialsProvider().setCredentials(
+                new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT), 
+                new UsernamePasswordCredentials(dbUser, dbPass));
+        HttpPost postRequest = new HttpPost(url);
+
+        StringEntity input = new StringEntity(record.toString());
+        input.setContentType("application/json");
+        postRequest.setEntity(input);
+        HttpResponse response = httpClient.execute(postRequest);
+        if (response.getStatusLine().getStatusCode() != 201) {
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + response.getStatusLine().getStatusCode());
+        }
+        BufferedReader br = new BufferedReader(
+                new InputStreamReader((response.getEntity().getContent())));
+        String output = "", line = "";
+        while ((line = br.readLine()) != null) {
+            output += line;
+        }
+        httpClient.getConnectionManager().shutdown();
+
+        return output;
+    }
+    
+    /**
+     *  Write a new record in Cloudant 
+     */
+    public String createRecord(String name, String value) throws MalformedURLException, IOException, ParseException {
+        String url = db + "/records";
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        httpClient.getCredentialsProvider().setCredentials(
+                new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT), 
+                new UsernamePasswordCredentials(dbUser, dbPass));
+        HttpPost postRequest = new HttpPost(url);
+
+        Record r = new Record(name, value);
+        StringEntity input = new StringEntity(r.toString());
+        input.setContentType("application/json");
+        postRequest.setEntity(input);
+        HttpResponse response = httpClient.execute(postRequest);
+        if (response.getStatusLine().getStatusCode() != 201) {
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + response.getStatusLine().getStatusCode());
+        }
+        BufferedReader br = new BufferedReader(
+                new InputStreamReader((response.getEntity().getContent())));
+        String output = "", line = "";
+        while ((line = br.readLine()) != null) {
+            output += line;
+        }
+        httpClient.getConnectionManager().shutdown();
+
+        return output;
+    }
+    
+    /**
+     *  delete a record by _id and _rev in Cloudant 
+     */
+    public String deleteRecord(String id, String rev) throws MalformedURLException, IOException, ParseException {
+        String url = db + "/records/"+id+"?rev="+rev;
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        httpClient.getCredentialsProvider().setCredentials(
+                new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT), 
+                new UsernamePasswordCredentials(dbUser, dbPass));
+        HttpDelete delRequest = new HttpDelete(url);
+
+        HttpResponse response = httpClient.execute(delRequest);
+        if (response.getStatusLine().getStatusCode() != 200) {
+            throw new RuntimeException("Failed : HTTP error code : "
+                    + response.getStatusLine().getStatusCode());
+        }
+        BufferedReader br = new BufferedReader(
+                new InputStreamReader((response.getEntity().getContent())));
+        String output = "", line = "";
+        while ((line = br.readLine()) != null) {
+            output += line;
+        }
+        httpClient.getConnectionManager().shutdown();
+
+        return output;
     }
 }

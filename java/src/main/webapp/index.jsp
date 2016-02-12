@@ -11,7 +11,7 @@
 </head>
 <body>
 	<nav class="top-nav amber hide-on-med-and-down">
-      <div class="nav-wrapper"><a href="/" style="padding-left:15px" class="brand-logo">Performance Test (Node.Js)</a><a href="#" data-activates="nav-mobile-collapsed" class="button-collapse"><i class="material-icons">menu</i></a>
+      <div class="nav-wrapper"><a href="/" style="padding-left:15px" class="brand-logo">Performance Test (Java)</a><a href="#" data-activates="nav-mobile-collapsed" class="button-collapse"><i class="material-icons">menu</i></a>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
                 <li><a href="http://localhost:3000">Node.Js</a></li>
                 <li><a href="http://localhost:4000">Golang</a></li>
@@ -20,7 +20,7 @@
       </div>
     </nav>
     <nav style="height:100px" class="top-nav amber hide-on-large-only">
-      <div style="padding-top:20px" class="nav-wrapper"><a href="/" style="font-size:250%" class="brand-logo">Performance Test (Node.Js)</a><a href="#" data-activates="nav-mobile-collapsed" class="button-collapse"><i style="font-size:350%" class="material-icons">menu</i></a>
+      <div style="padding-top:20px" class="nav-wrapper"><a href="/" style="font-size:250%" class="brand-logo">Performance Test (Java)</a><a href="#" data-activates="nav-mobile-collapsed" class="button-collapse"><i style="font-size:350%" class="material-icons">menu</i></a>
         <ul id="nav-mobile-collapsed" class="side-nav">
                 <li><a href="http://localhost:3000">Node.Js</a></li>
                 <li><a href="http://localhost:4000/">Golang</a></li>
@@ -80,6 +80,9 @@
             var value = document.getElementById('record_value').value;
 
             function callback(response) {
+                console.log(response);
+                if ( response.error ) 
+                    return error(response)
                 var text = printObj(response);
                 var endTime = new Date();
                 var time = endTime.getTime() - startTime.getTime();
@@ -87,14 +90,14 @@
             }
 
             function error(response) {
-                var text = response.responseText;
+                console.log(response);
                 var endTime = new Date();
                 var time = endTime.getTime() - startTime.getTime();
-                printErr("CREATE", time + " ms - " + text);
+                printErr("CREATE", time + " ms - " + printObj(response));
             }
             $.ajax({
-                url: '/record',
-                contentType: 'application/json',
+                url: '/comp3601/webapi/record',
+//                contentType: 'application/json',
                 data: JSON.stringify({
                     name: name,
                     value: value
@@ -110,6 +113,8 @@
 
             function callback(response) {
                 response = JSON.parse(response)
+                if ( response.error ) 
+                    return error(response)
                 var text = printObj(response);
                 var endTime = new Date();
                 var time = endTime.getTime() - startTime.getTime();
@@ -127,7 +132,7 @@
             }
             var name = document.getElementById('record_name').value;
             $.ajax({
-                url: '/record?name=' + name,
+                url: '/webapi/record?name=' + name,
                 type: 'GET',
                 success: callback,
                 error: error
@@ -153,7 +158,7 @@
             var name = document.getElementById('record_name').value;
             var value = document.getElementById('record_value').value;
             $.ajax({
-                url: '/record',
+                url: '/webapi/record',
                 type: 'POST',
                 contentType: 'application/json',
                 success: callback,
@@ -187,7 +192,7 @@
             }
             var name = document.getElementById('record_name').value;
             $.ajax({
-                url: '/record?name=' + name,
+                url: '/webapi/record?name=' + name,
                 type: 'DELETE',
                 success: callback,
                 error: error
@@ -214,7 +219,7 @@
             var name = document.getElementById('record_name').value;
             var value = document.getElementById('record_value').value;
             $.ajax({
-                url: '/long-operation',
+                url: '/webapi/long-operation',
                 type: 'POST',
                 contentType: 'application/json',
                 success: callback,
