@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html>
 
 <head>
@@ -80,7 +79,6 @@
             var value = document.getElementById('record_value').value;
 
             function callback(response) {
-                console.log(response);
                 if ( response.error ) 
                     return error(response)
                 var text = printObj(response);
@@ -96,12 +94,7 @@
                 printErr("CREATE", time + " ms - " + printObj(response));
             }
             $.ajax({
-                url: '/comp3601/webapi/record',
-//                contentType: 'application/json',
-                data: JSON.stringify({
-                    name: name,
-                    value: value
-                }),
+                url: '/comp3601/webapi/record?name='+name+'&value='+value,
                 type: 'PUT',
                 success: callback,
                 error: error
@@ -112,7 +105,6 @@
             var startTime = new Date();
 
             function callback(response) {
-                response = JSON.parse(response)
                 if ( response.error ) 
                     return error(response)
                 var text = printObj(response);
@@ -124,15 +116,13 @@
             }
 
             function error(response) {
-                console.log(response);
-                var text = response.responseText;
                 var endTime = new Date();
                 var time = endTime.getTime() - startTime.getTime();
-                printErr("READ", time + " ms - " + text);
+                printErr("READ", time + " ms - " + printObj(response));
             }
             var name = document.getElementById('record_name').value;
             $.ajax({
-                url: '/webapi/record?name=' + name,
+                url: '/comp3601/webapi/record?name=' + name,
                 type: 'GET',
                 success: callback,
                 error: error
@@ -143,6 +133,8 @@
             var startTime = new Date();
 
             function callback(response) {
+                if ( response.error ) 
+                    return error(response)
                 var text = printObj(response);
                 var endTime = new Date();
                 var time = endTime.getTime() - startTime.getTime();
@@ -150,17 +142,15 @@
             }
 
             function error(response) {
-                var text = response.responseText;
                 var endTime = new Date();
                 var time = endTime.getTime() - startTime.getTime();
-                printErr("UPDATE", time + " ms - " + text);
+                printErr("UPDATE", time + " ms - " + printObj(response));
             }
             var name = document.getElementById('record_name').value;
             var value = document.getElementById('record_value').value;
             $.ajax({
-                url: '/webapi/record',
+                url: '/comp3601/webapi/record',
                 type: 'POST',
-                contentType: 'application/json',
                 success: callback,
                 data: JSON.stringify({
                     name: name,
@@ -174,10 +164,11 @@
             var startTime = new Date();
 
             function callback(response) {
-                var text = printObj(response);
+                if ( response.error ) 
+                    return error(response);
                 var endTime = new Date();
                 var time = endTime.getTime() - startTime.getTime();
-                printOut("DELETE", time + " ms - " + text);
+                printOut("DELETE", time + " ms - " + response);
                 document.getElementById("record_name").value = "";
                 document.getElementById("record_value").value = "";
                 $('#record_name').focus();
@@ -185,14 +176,13 @@
             }
 
             function error(response) {
-                var text = response.responseText;
                 var endTime = new Date();
                 var time = endTime.getTime() - startTime.getTime();
-                printErr("DELETE", time + " ms - " + text);
+                printErr("DELETE", time + " ms - " + printObj(response));
             }
             var name = document.getElementById('record_name').value;
             $.ajax({
-                url: '/webapi/record?name=' + name,
+                url: '/comp3601/webapi/record?name=' + name,
                 type: 'DELETE',
                 success: callback,
                 error: error
@@ -202,26 +192,23 @@
             var startTime = new Date();
 
             function callback(response) {
-                response = JSON.parse(response)
-                var text = printObj(response);
+                if ( response.error) 
+                    return error(response);
                 var endTime = new Date();
                 var time = endTime.getTime() - startTime.getTime();
-                printOut("LONG_OP", time + " ms - " + text);
+                printOut("LONG_OP", time + " ms - " + response);
             }
 
             function error(response) {
-                response = JSON.parse(response)
-                var text = response.responseText;
                 var endTime = new Date();
                 var time = endTime.getTime() - startTime.getTime();
-                printErr("LONG_OP", time + " ms - " + text);
+                printErr("LONG_OP", time + " ms - " + pringObj(response));
             }
             var name = document.getElementById('record_name').value;
             var value = document.getElementById('record_value').value;
             $.ajax({
-                url: '/webapi/long-operation',
-                type: 'POST',
-                contentType: 'application/json',
+                url: '/comp3601/webapi/long-operation',
+                type: 'GET',
                 success: callback,
                 data: JSON.stringify({
                     name: name,

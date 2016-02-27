@@ -84,9 +84,7 @@ public class RecordResource
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public String putRecord(MultivaluedMap<String, String> params) throws Exception {
-        String name = params.getFirst("name");
-        String value = params.getFirst("value");
+    public String putRecord(@QueryParam("name") String name, @QueryParam("value") String value) throws Exception {
         Record r = findRecord(name);
         if ( r != null ) { 
             return "{\"error\":\"record already exists with name='"+name+"'\"}";
