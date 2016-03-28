@@ -202,7 +202,7 @@
             function error(response) {
                 var endTime = new Date();
                 var time = endTime.getTime() - startTime.getTime();
-                printErr("LONG_OP", time + " ms - " + pringObj(response));
+                printErr("LONG_OP", time + " ms - " + printObj(response));
             }
             var name = document.getElementById('record_name').value;
             var value = document.getElementById('record_value').value;
