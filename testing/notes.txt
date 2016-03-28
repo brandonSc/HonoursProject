@@ -1,0 +1,5 @@
+Test results in NODE after 1000 consecutive trails: 
+Avg Resp. Time = 3982.599
+
+Test restults in GO after 1000 consecutive trails:
+Avg Resp. Time = 1542.326
