@@ -39,18 +39,18 @@ func Index(w http.ResponseWriter, r *http.Request) {
 // @param name
 //
 func GetRecord(w http.ResponseWriter, r *http.Request) {
-	// get name from request
+	// get name param from request
 	name, err := url.QueryUnescape(r.URL.Query().Get("name"))
 	if err != nil {
-		//fmt.Printf("error parsing url paramater: routes.GetRecord: %s", err)
+		fmt.Printf("error parsing url paramater: routes.GetRecord: %s", err)
 		return
 	}
 	name = strings.Trim(name, " ")
-	// send cloudant requet for record
+
+	// request record from Cloudant and parse the JSON
 	res, err := find_record(name)
-	// parse from json
 	if err != nil {
-		//fmt.Printf("error reading cloudant json, routes.GetRecord: %s\n", err)
+		fmt.Printf("error reading cloudant json, routes.GetRecord: %s\n", err)
 		w.WriteHeader(500)
 		fmt.Fprint(w, `{"error":"unable to read cloudant json response"}`)
 		return
@@ -60,19 +60,20 @@ func GetRecord(w http.ResponseWriter, r *http.Request) {
 	js := buf.String()
 	var response Response
 	err = json.Unmarshal([]byte(js), &response)
+
 	// check if a document was found in db
 	if len(response.Docs) > 0 {
+		// response contains a document with the given name
 		str, err := json.Marshal(response.Docs[0])
 		if err != nil {
-			//fmt.Printf("error converting documents to json, routes.GetRecord: %s\n", err)
+			fmt.Printf("error converting documents to json, routes.GetRecord: %s\n", err)
 			w.WriteHeader(500)
 			fmt.Fprint(w, `{"error":"unable to form json response"}`)
 		} else {
-			// send the doc
 			fmt.Fprint(w, string(str))
 		}
 	} else {
-		// no docs found, send 404
+		// no doc matching the given name was found
 		w.WriteHeader(404)
 		s := fmt.Sprintf(`{"error":"no Record found with name: ` + name + `"}`)
 		fmt.Fprint(w, s)

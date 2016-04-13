@@ -1,0 +1,23 @@
+Node.Js
+-------
+1 Req./sec: 264.934 ms
+10 Req./sec: 288.888
+50 Req./sec: 13360.906
+LONG_OP 50 reqs, interval  2 seconds: 88831.08
+LONG_OP 50 reqs, interval 10 seconds: 
+
+Golang
+------
+1 Req./sec: 96.433
+10 Req./sec: 219.986 
+50 Req./sec: 2790.976 ms 
+LONG_OP 50 reqs, interval  2 seconds: 98040.16
+LONG_OP 50 reqs, interval 10 seconds: 
+
+Java
+----
+1 Req./sec: 533.22 
+10 Req./sec: 598.02
+50 Req./sec: 14662.21 
+LONG_OP 50 reqs, interval  2 seconds: 98040.16
+LONG_OP 50 reqs, interval 10 seconds: 

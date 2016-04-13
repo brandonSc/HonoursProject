@@ -37,7 +37,7 @@ public class RecordResource
     // set cloudant database URL and credentials 
     String db = "https://0a6f8059-22b3-4136-9e7c-9fbcb7b4579d-bluemix.cloudant.com";
     String dbUser = "0a6f8059-22b3-4136-9e7c-9fbcb7b4579d-bluemix";
-    String dbPass = "7bc75c7e0ee2f57c22b8a985979885e6ecb78c64f5f201bcf61d8ab73b72642e";
+    String dbPass = ""; // COPY AND PASTE SECRET KEY HERE
 
     /**
      * GET /record
